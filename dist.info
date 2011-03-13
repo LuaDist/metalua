@@ -1,0 +1,14 @@
+--- This file is part of LuaDist project
+
+name = "metalua"
+version = "0.5"
+
+desc = "Metalua is a static metaprogramming system for Lua: a set of tools that let you alter the compilation process in arbitrary, powerful and maintainable ways."
+author = "Fabien Fleutot"
+maintainer = "Michal Kottman"
+url = "http://metalua.luaforge.net/"
+
+depends = {
+	"lua ~> 5.1"
+}
+

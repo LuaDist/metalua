@@ -5,36 +5,13 @@
 # Metalua sources
 BASE=${PWD}
 
-# Temporary building location.
-# Upon installation, everything will be moved to ${INSTALL_LIB} and ${INSTALL_BIN}
+BUILD=@CMAKE_CURRENT_BINARY_DIR@
 
-if [ -z "${BUILD}" ]; then
-  BUILD=/tmp/metalua-build
-fi
+BUILD_BIN=${BUILD}/bin
+BUILD_LIB=${BUILD}/lib
 
-if [ -z "${BUILD_BIN}" ]; then
-  BUILD_BIN=${BUILD}/bin
-fi
-
-if [ -z "${BUILD_LIB}" ]; then
-  BUILD_LIB=${BUILD}/lib
-fi
-
-# Where to place the final results
-# INSTALL_BIN=/usr/local/bin
-# INSTALL_LIB=/usr/local/lib/lua/5.1
-if [ -z "${INSTALL_BIN}" ]; then
-  INSTALL_BIN=~/local/bin
-fi
-
-if [ -z "${INSTALL_LIB}" ]; then
-  INSTALL_LIB=~/local/lib/lua
-fi
-
-# Where to find Lua executables.
-# On many Debian-based systems, those can be installed with "sudo apt-get install lua5.1"
-LUA=$(which lua)
-LUAC=$(which luac)
+LUA=@LUA@
+LUAC=@LUAC@
 
 # --- END OF USER-EDITABLE PART ---
 
@@ -89,27 +66,3 @@ for SRC in $(find ${BUILD_LIB} -name '*.mlua'); do
     fi
 done
 
-echo '*** Generate make-install.sh script ***'
-
-cat > make-install.sh <<EOF2
-#!/bin/sh
-mkdir -p ${INSTALL_BIN}
-mkdir -p ${INSTALL_LIB}
-
-cat > ${INSTALL_BIN}/metalua <<EOF
-#!/bin/sh
-METALUA_LIB=${INSTALL_LIB}
-export LUA_PATH="?.luac;?.lua;\\\${METALUA_LIB}/?.luac;\\\${METALUA_LIB}/?.lua"
-export LUA_MPATH="?.mlua;\\\${METALUA_LIB}/?.mlua"
-exec ${LUA} \\\${METALUA_LIB}/metalua.luac "\\\$@"
-EOF
-
-chmod a+x ${INSTALL_BIN}/metalua
-
-cp -R ${BUILD_LIB}/* ${INSTALL_LIB}/
-EOF2
-chmod a+x make-install.sh
-
-echo
-echo "Build completed, proceed to installation with './make-install.sh' or 'sudo ./make-install.sh'"
-echo
