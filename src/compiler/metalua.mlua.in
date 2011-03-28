@@ -1,5 +1,7 @@
 --*-lua-*- Set as a metalua file because it requires some metalua libs
 
+package.path = './?.luac;'..(_PROGDIR or "") .. "/@INSTALL_LMOD@/?.luac;"..package.path
+
 --require 'verbose_require'
 
 require 'metalua.compiler'

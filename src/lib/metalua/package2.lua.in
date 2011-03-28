@@ -4,11 +4,9 @@ require 'metalua.mlc'
 
 package.metalua_extension_prefix = 'metalua.extension.'
 
+local dir = (_PROGDIR or "") .. "/@INSTALL_LMOD@"
 package.mpath = os.getenv 'LUA_MPATH' or
-   './?.mlua;/usr/local/share/lua/5.1/?.mlua;'..
-   '/usr/local/share/lua/5.1/?/init.mlua;'..
-   '/usr/local/lib/lua/5.1/?.mlua;'..
-   '/usr/local/lib/lua/5.1/?/init.mlua'
+   './?.mlua;'..dir..'/?.mlua;'..dir..'/?/init.mlua'
 
 
 ----------------------------------------------------------------------
