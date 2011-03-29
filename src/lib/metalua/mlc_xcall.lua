@@ -82,8 +82,8 @@ function mlc_xcall.client_file (luafile)
 
    local tmpfilename = os.tmpname()
    local cmd = string.format (
-      [=[lua -l metalua.mlc_xcall -e "mlc_xcall.server([[%s]], [[%s]], %s)"]=], 
-      luafile, tmpfilename, mlc.metabugs and "true" or "false")
+      [=[%s -l metalua.mlc_xcall -e "mlc_xcall.server([[%s]], [[%s]], %s)"]=], 
+      (_PROGDIR and _PROGDIR.."/lua" or "lua"), luafile, tmpfilename, mlc.metabugs and "true" or "false")
 
    -- printf("os.execute [[%s]]\n\n", cmd)
 

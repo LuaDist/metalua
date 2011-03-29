@@ -70,7 +70,6 @@ function mlc.convert (x, src_fmt, dst_fmt, name)
    -- printf(" *** Convert a %s into a %s", src_fmt, dst_fmt)
 
    -{ jump_to_point }
-
    error "Can't perform this conversion (bad src name)"
 
    POINT 'luafile', 'string' -- x is the src file's name

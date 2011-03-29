@@ -4,10 +4,7 @@ require 'metalua.mlc'
 
 package.metalua_extension_prefix = 'metalua.extension.'
 
-local dir = (_PROGDIR or "") .. "/@INSTALL_LMOD@"
-package.mpath = os.getenv 'LUA_MPATH' or
-   './?.mlua;'..dir..'/?.mlua;'..dir..'/?/init.mlua'
-
+package.mpath = os.getenv 'LUA_MPATH' or string.gsub( package.path or "./?.mlua", "%.lua", "%.mlua")
 
 ----------------------------------------------------------------------
 -- resc(k) returns "%"..k if it's a special regular expression char,
@@ -52,9 +49,9 @@ end
 local function spring_load(filename)
    -- FIXME: handle compilation errors
    local pattern = 
-      [=[lua -l metalua.compiler -l serialize -e ]=]..
+      [=[%s -l metalua.compiler -l serialize -e ]=]..
       [=["print(serialize(mlc.ast_of_luafile [[%s]]))"]=]
-   local cmd = string.format (pattern, filename)
+   local cmd = string.format (pattern, (_PROGDIR and _PROGDIR.."/lua" or "lua"), filename)
    --print ("running command: ``" .. cmd .. "''")
    local fd = io.popen (cmd)
    local ast_src = fd:read '*a'
