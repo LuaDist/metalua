@@ -80,7 +80,8 @@ method_args = gg.multisequence{
    name = "function argument(s)",
    { "{", table_content, "}" },
    { "(", func_args_content, ")", builder = fget(1) },
-   default = function(lx) local r = opt_string(lx); return r and {r} or { } end }
+   { "+{", quote_content, "}" }, 
+   function(lx) local r = opt_string(lx); return r and {r} or { } end }
 
 --------------------------------------------------------------------------------
 -- [func_val] parses a function, from opening parameters parenthese to
@@ -92,7 +93,7 @@ method_args = gg.multisequence{
 -- definitions.
 --------------------------------------------------------------------------------
 func_params_content = gg.list{ name="function parameters",
-   gg.multisequence{ { "...", builder = "Dots" }, default = id },
+   gg.multisequence{ { "...", builder = "Dots" }, id },
    separators  = ",", terminators = {")", "|"} } 
 
 local _func_params_content = function (lx) return func_params_content(lx) end
@@ -108,8 +109,16 @@ local _func_val = function (lx) return func_val(lx) end
 function id_or_literal (lx)
    local a = lx:next()
    if a.tag~="Id" and a.tag~="String" and a.tag~="Number" then
-      gg.parse_error (lx, "Unexpected expr token %s",
-                      _G.table.tostring (a, 'nohash'))
+      local msg
+      if a.tag=='Eof' then
+         msg = "End of file reached when an expression was expected"
+      elseif a.tag=='Keyword' then
+         msg = "An expression was expected, and `"..a[1]..
+            "' can't start an expression"
+      else
+         msg = "Unexpected expr token " .. _G.table.tostring (a, 'nohash')
+      end
+      gg.parse_error (lx, msg)
    end
    return a
 end
@@ -163,7 +172,7 @@ expr = gg.expr { name = "expression",
       { "false",                   builder = "False" },
       { "...",                     builder = "Dots" },
       table,
-      default = id_or_literal },
+      id_or_literal },
 
    infix = { name="expr infix op",
       { "+",  prec = 60, builder = opf2 "add"  },

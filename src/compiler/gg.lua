@@ -53,8 +53,12 @@ function parser_metatable.__call (parser, lx, ...)
       local li = lx:lineinfo_right() or { "?", "?", "?", "?" }
       local status, ast = pcall (parser.parse, parser, lx, ...)      
       if status then return ast else
+         -- Try to replace the gg.lua location, in the error msg, with
+         -- the place where the current parser started handling the
+         -- lexstream.
+         -- Since the error is rethrown, these places are stacked. 
          error (string.format ("%s\n - (l.%s, c.%s, k.%s) in parser %s", 
-                               ast:strmatch "gg.lua:%d+: (.*)" or ast,
+                               ast :strmatch "gg.lua:%d+: (.*)" or ast,
                                li[1], li[2], li[3], parser.name or parser.kind))
       end
    end
@@ -90,11 +94,11 @@ local function raw_parse_sequence (lx, p)
       e=p[i]
       if type(e) == "string" then 
          if not lx:is_keyword (lx:next(), e) then
-            parse_error (lx, "Keyword '%s' expected", e) end
+            parse_error (lx, "A keyword was expected, probably `%s'.", e) end
       elseif is_parser (e) then
          table.insert (r, e (lx)) 
       else 
-         gg.parse_error (lx,"Sequence `%s': element #%i is not a string "..
+         gg.parse_error (lx,"Sequence `%s': element #%i is neither a string "..
                          "nor a parser: %s", 
                          p.name, i, table.tostring(e))
       end
@@ -201,10 +205,14 @@ function sequence (p)
    -- Construction
    -------------------------------------------------------------------
    -- Try to build a proper name
-   if not p.name and type(p[1])=="string" then 
-      p.name = p[1].." ..." 
-      if type(p[#p])=="string" then p.name = p.name .. " " .. p[#p] end
-   else
+   if p.name then
+      -- don't touch existing name
+   elseif type(p[1])=="string" then -- find name based on 1st keyword
+      if #p==1 then p.name=p[1]
+      elseif type(p[#p])=="string" then
+         p.name = p[1] .. " ... " .. p[#p]
+      else p.name = p[1] .. " ..." end
+   else -- can't find a decent name
       p.name = "<anonymous>"
    end
 
@@ -258,15 +266,16 @@ function multisequence (p)
    -------------------------------------------------------------------
    function p:add (s)
       -- compile if necessary:
-      local keyword = s[1]
-      if not is_parser(s) then sequence(s) end
-      if is_parser(s) ~= 'sequence' or type(keyword) ~= "string" then 
+      local keyword = type(s)=='table' and s[1]
+      if type(s)=='table' and not is_parser(s) then sequence(s) end
+      if is_parser(s)~='sequence' or type(keyword)~='string' then 
          if self.default then -- two defaults
             error ("In a multisequence parser, all but one sequences "..
                    "must start with a keyword")
          else self.default = s end -- first default
       elseif self.sequences[keyword] then -- duplicate keyword
-         eprintf (" *** Warning: keyword %q overloaded in multisequence ***", keyword)
+         eprintf (" *** Warning: keyword %q overloaded in multisequence ***",
+                  keyword)
          self.sequences[keyword] = s
       else -- newly caught keyword
          self.sequences[keyword] = s
@@ -460,7 +469,7 @@ function expr (p)
          -- Check for non-associative operators, and complain if applicable. 
          -----------------------------------------
          elseif p2.assoc=="none" and p2.prec==prec then
-            parser_error (lx, "non-associative operator!")
+            parse_error (lx, "non-associative operator!")
 
          -----------------------------------------
          -- No infix operator suitable at that precedence
