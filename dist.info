@@ -7,6 +7,7 @@ desc = "Metalua is a static metaprogramming system for Lua: a set of tools that 
 author = "Fabien Fleutot"
 maintainer = "Michal Kottman"
 url = "http://metalua.luaforge.net/"
+license = "MIT"
 
 depends = {
 	"lua ~> 5.1"
