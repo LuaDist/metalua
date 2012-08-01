@@ -38,7 +38,10 @@ add_custom_command ( OUTPUT ${P}/${D}.lua COMMAND ${LUA} ${LIB}/metalua.lua ${S}
 endforeach ( )
 
 install_lua_executable ( metalua ${LIB}/metalua.lua )
-add_dependencies ( metalua bootstrap )
+# When building the executable wrapper make sure to do it after bootstrap
+if ( TARGET metalua ) 
+  add_dependencies ( metalua bootstrap )
+endif ()
 
 install ( DIRECTORY ${LIB}/ DESTINATION ${INSTALL_LMOD} COMPONENT Runtime PATTERN "*.in" EXCLUDE )
 install_doc ( doc/ )
