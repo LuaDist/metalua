@@ -34,11 +34,12 @@ file ( GLOB_RECURSE SRCS RELATIVE ${LIB} "${LIB}/*.mlua" )
 foreach ( S ${SRCS} )
 get_filename_component ( P ${S} PATH )
 get_filename_component ( D ${S} NAME_WE )
-add_custom_command ( OUTPUT ${P}/${D}.lua COMMAND ${LUA} ${LIB}/metalua.lua ${S} 
-  -o ${P}/${D}.lua WORKING_DIRECTORY ${LIB} DEPENDS bootstrap )
+add_custom_command ( OUTPUT ${P}/${D}.lua COMMAND ${LUA} ${LIB}/metalua.lua ${S} -o ${P}/${D}.lua WORKING_DIRECTORY ${LIB} DEPENDS bootstrap )
 endforeach ( )
 
 install_lua_executable ( metalua ${LIB}/metalua.lua )
+add_dependencies ( metalua bootstrap )
+
 install ( DIRECTORY ${LIB}/ DESTINATION ${INSTALL_LMOD} COMPONENT Runtime PATTERN "*.in" EXCLUDE )
 install_doc ( doc/ )
 install_foo ( junk/ )
