@@ -1,0 +1,73 @@
+\documentclass{book}
+\usepackage{palatino}
+\usepackage{graphicx}
+
+\usepackage{fancyhdr}
+%\usepackage{fullpage}
+\usepackage{alltt}
+\usepackage{url}
+\usepackage{fancyvrb}
+
+\def\summary#1{{\em#1}}
+\def\caveat#1{
+  \begin{center}
+    \begin{tabular}{|p{10cm}|}
+        \hline
+        \noindent \bf Caveat: \em#1 \\
+        \hline
+    \end{tabular}
+  \end{center}}
+\def\apitype#1#2{{~\\\noindent\bf Type \tt{#1}}\\{#2}}
+\def\apifunction#1#2{{~\\\noindent\bf Function \tt{#1}}\\{#2}}
+
+\setlength\headsep{0.4cm}
+\setlength\parindent{0cm}
+
+\title{Man metalua 0.4}
+
+\author{Fabien {\sc Fleutot}\\[10mm] 
+  $-\left\{\begin{minipage}{7.6cm}
+      \hspace{3mm}\includegraphics[width=7cm]{magritte.pdf}
+    \end{minipage}\right\}$}
+
+\begin{document}
+
+\pagestyle{fancy}
+\setlength\parskip{0.2cm}
+
+\maketitle
+\include{reading-guide}
+\tableofcontents
+
+\chapter[meta-programming]{Meta-programming in metalua}
+\include{intro}
+\include{syntax-ext}
+\include{data}
+\include{meta}
+
+\chapter[meta-libraries]{Meta-programming libraries and extensions}
+\include{gg-ref}
+\include{mlp-ref}
+\include{match-ref}
+\include{trycatch-ref}
+\include{walk-ref}
+% \include{hygiene-ref} % Definitely not ready :(
+\include{dollar-ref}
+
+\chapter[generic libraries]{General purpose libraries and extensions}
+\include{stdlib}
+\include{clopts-ref}
+\include{springs-ref}
+\include{clist-ref}
+%\include{-ref}
+
+\chapter{Samples and tutorials}
+\include{samples}
+\include{sample-exception}
+\include{sample-match}
+%\include{}
+
+\appendix
+\include{src-hints}
+\include{ast}
+\end{document}
